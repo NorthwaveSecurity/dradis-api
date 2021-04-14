@@ -1,0 +1,27 @@
+= Dradis API
+
+A python wrapper around the dradis API.
+
+== Setup
+
+----
+pip install .
+----
+
+Or directly from the repository:
+
+----
+pip install git+ssh://gitlab.local.northwave.nl/redteam/dradis-api.git
+----
+
+== Usage
+
+----
+from dradis import Dradis
+
+# Define api_token and url
+
+dradis_api = Dradis(api_token, url)
+projects = dradis_api.get_all_projects()
+...
+----

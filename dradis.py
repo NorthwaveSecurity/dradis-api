@@ -366,9 +366,9 @@ class Dradis():
 
         return result
 
-    # GET ALL EVIDENCE NODES FOR A SPECIFIC PROJECT
+    # GET A SPECIFIC NODE FOR A SPECIFIC PROJECT
     # REQUIRED:
-    #   - project_id -> ID for the project for the nodes
+    #   - project_id -> ID for the project for the node
     #   - node_id -> ID for the node to get
     def get_node(self, project_id: int, node_id: int) -> list:
 
@@ -382,6 +382,12 @@ class Dradis():
         self._cleanup_project_header()
 
         return result
+
+    def get_or_create_node(self, project_id: int, label: str):
+        node = self.get_node_by_label(project_id, label)
+        if not node:
+            return self.create_node(project_id=project_id, label=label, type_id=1)
+        return node
 
     # CREATE NEW NODE
     # REQUIRED:
@@ -1140,6 +1146,12 @@ class Dradis():
         for issue in self.get_all_issues(project_id=project_id):
             if issue.get('title', None) == title:
                 return issue
+
+    def get_node_by_label(self, project_id: int, label: str):
+        for n in self.get_all_nodes(project_id):
+            if n['label'] == label:
+                return n
+        return None
 
     def __exists(self, value_name: str, value_to_check: str, list_to_check: list):
         return any(d.get(value_name, None) == value_to_check for d in list_to_check)

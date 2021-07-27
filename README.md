@@ -8,7 +8,7 @@
     •
     <a href="#usage">Usage</a>
     •
-    <a href="#supported_endpoints">Supported endpoints</a>
+    <a href="#supported-endpoints">Supported endpoints</a>
     <br/>
     <sub>Built with ❤ by the <a href="https://twitter.com/NorthwaveLabs">Northwave</a> Red Team</sub>
     <br/>

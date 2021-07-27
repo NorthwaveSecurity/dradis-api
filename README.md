@@ -1,6 +1,6 @@
 <p align="center">
     <br/>
-    <b>dradis-api is a python wrapper around the <a href="https://dradisframework.com/support/guides/rest_api/">API of dradis</a>.</b>
+    <b>Dradis-api is a python wrapper around the <a href="https://dradisframework.com/support/guides/rest_api/">API of Dradis</a>.</b>
     <br/>
     <a href="#goal">Goal</a>
     •

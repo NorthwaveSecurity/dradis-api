@@ -1,6 +1,6 @@
 #####################################################################################
 #                  dradis-api: Python Wrapper for Dradis API v1.0                   #
-#                           Author: Frank de Korte                                  #
+#                   Author: Frank de Korte, Jan-Jaap Korpershoek                    #
 #####################################################################################
 #
 # MIT License

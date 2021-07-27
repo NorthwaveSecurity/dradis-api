@@ -1,12 +1,11 @@
 #####################################################################################
-#                  dradis-python: Python Wrapper for Dradis API v1.0                #
-#                       Copyright (c) 2019 Northwave B.V.                           #
+#                  dradis-api: Python Wrapper for Dradis API v1.0                   #
 #                           Author: Frank de Korte                                  #
 #####################################################################################
 #
 # MIT License
 #
-# Copyright (c) 2020 Northwave B.V. (www.northwave-security.com)
+# Copyright (c) 2021 Northwave B.V. (www.northwave-security.com)
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal

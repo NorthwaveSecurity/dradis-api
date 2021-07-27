@@ -4,7 +4,6 @@
 #                           Author: Frank de Korte                                  #
 #####################################################################################
 import requests
-import json
 
 
 class DradisException(Exception):
@@ -44,20 +43,11 @@ class Dradis():
 
     # Generic action to contact dradis and return the result as JSON
     # Internal use only
-    def _action(self, url, header, req_type, success_code, data=None):
+    def _action(self, url, header, req_type, success_code, **kwargs):
 
         response = None
         try:
-            if (req_type == "GET"):
-                response = requests.get(url, headers=header, verify=self.__verify)
-            elif (req_type == "POST"):
-                response = requests.post(url, headers=header, data=data, verify=self.__verify)
-            elif (req_type == "PUT"):
-                response = requests.put(url, headers=header, data=data, verify=self.__verify)
-            elif (req_type == "DELETE"):
-                response = requests.delete(url, headers=header, verify=self.__verify)
-            else:
-                raise ValueError("Request Type must be GET, POST, PUT or DELETE")
+            response = requests.request(req_type, url, headers=header, verify=self.__verify, **kwargs)
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
             raise DradisException from e
@@ -125,7 +115,7 @@ class Dradis():
         header = self.__headers
 
         # GET RESULT
-        result = self._action(url=url, header=header, req_type=req_type, success_code=success, data=data)
+        result = self._action(url=url, header=header, req_type=req_type, success_code=success, json=data)
 
         return result
 
@@ -145,7 +135,7 @@ class Dradis():
         header = self.__headers
 
         # GET RESULT
-        result = self._action(url=url, header=header, req_type=req_type, success_code=success, data=data)
+        result = self._action(url=url, header=header, req_type=req_type, success_code=success, json=data)
 
         return result
 
@@ -215,7 +205,7 @@ class Dradis():
     def create_team(self, team_name: str, team_since="") -> list:
 
         # DATA TO SEND
-        team_data = json.dumps({"team": {"name": "{}".format(team_name), "team_since": "{}".format(team_since)}})
+        team_data = {"team": {"name": "{}".format(team_name), "team_since": "{}".format(team_since)}}
 
         # Call the create function with endpoint name, data and id.
         return self._create(endpoint=self._TEAMS, data=team_data)
@@ -236,9 +226,6 @@ class Dradis():
             team_data["team"]["name"] = team_name
         if team_since:
             team_data["team"]["team_since"] = team_since
-
-        # Turn it into JSON
-        team_data = json.dumps(team_data)
 
         # Call the update function with endpoint name, data and id.
         return self._update(endpoint=self._TEAMS, data=team_data, id=team_id)
@@ -287,15 +274,14 @@ class Dradis():
                        author_ids=[], template="") -> list:
 
         # Create project data
-        project_data = json.dumps({
-                "project": {
-                    "name": "{}".format(project_name),
-                    "client_id": "{}".format(client_id),
-                    "report_template_properties_id": "{}".format(report_template_id),
-                    "author_ids": author_ids,
-                    "template": "{}".format(template)}
-            }
-        )
+        project_data = {
+            "project": {
+                "name": "{}".format(project_name),
+                "client_id": "{}".format(client_id),
+                "report_template_properties_id": "{}".format(report_template_id),
+                "author_ids": author_ids,
+                "template": "{}".format(template)}
+        }
 
         return self._create(endpoint=self._PROJECT, data=project_data)
 
@@ -326,9 +312,6 @@ class Dradis():
             project_data["project"]["author_ids"] = author_ids
         if template:
             project_data["project"]["template"] = template
-
-        # Make some JSON!
-        project_data = json.dumps(project_data)
 
         return self._update(endpoint=self._PROJECT, id=project_id, data=project_data)
 
@@ -405,14 +388,14 @@ class Dradis():
         self._add_project_header(project_id)
 
         # Set the node data
-        node_data = json.dumps({
+        node_data = {
             "node": {
                 "label": label,
                 "type_id": type_id,
                 "parent_id": parent_id,
                 "position": position
             }
-        })
+        }
 
         # Grab the result
         result = self._create(endpoint=self._NODE, data=node_data)
@@ -451,9 +434,6 @@ class Dradis():
             node_data["node"]["parent_id"] = parent_id
         if position:
             node_data["node"]["position"] = position
-
-        # Turn it into JSON
-        node_data = json.dumps(node_data)
 
         # Grab the result
         result = self._update(endpoint=self._NODE, id=node_id, data=node_data)
@@ -533,7 +513,7 @@ class Dradis():
         self._add_project_header(project_id)
 
         # Set the node data
-        node_data = json.dumps({"issue": {"text": text}})
+        node_data = {"issue": {"text": text}}
 
         # Grab the result
         result = self._create(endpoint=self._ISSUE, data=node_data)
@@ -553,7 +533,7 @@ class Dradis():
         self._add_project_header(project_id)
 
         # Set the node data
-        node_data = json.dumps({"issue": {"text": text}})
+        node_data = {"issue": {"text": text}}
 
         # Grab the result
         result = self._update(endpoint=self._ISSUE, id=issue_id, data=node_data)
@@ -643,7 +623,7 @@ class Dradis():
         endpoint = self._EVIDENCE.replace("<node_id>", str(node_id))
 
         # Set the node data
-        node_data = json.dumps({"evidence": {"content": content, "issue_id": str(issue_id)}})
+        node_data = {"evidence": {"content": content, "issue_id": str(issue_id)}}
 
         # Grab the result
         result = self._create(endpoint=endpoint, data=node_data)
@@ -667,7 +647,7 @@ class Dradis():
         endpoint = self._EVIDENCE.replace("<node_id>", str(node_id))
 
         # Set the node data
-        node_data = json.dumps({"evidence": {"content": content, "issue_id": str(issue_id)}})
+        node_data = {"evidence": {"content": content, "issue_id": str(issue_id)}}
 
         # Grab the result
         result = self._update(endpoint=endpoint, id=evidence_id, data=node_data)
@@ -751,7 +731,7 @@ class Dradis():
         self._add_project_header(project_id)
 
         # Create the data set
-        content_data = json.dumps({"content_block": {"content": content, "block_group": blockgroupname}})
+        content_data = {"content_block": {"content": content, "block_group": blockgroupname}}
 
         # Get the result
         result = self._create(endpoint=self._CONTENTBLOCK, data=content_data)
@@ -779,7 +759,6 @@ class Dradis():
         if blockgroupname:
             content_data["content_block"]["block_group"] = blockgroupname
 
-        content_data = json.dumps(content_data)
         # Get the result
         result = self._update(endpoint=self._CONTENTBLOCK, id=contentblock_id, data=content_data)
 
@@ -869,7 +848,7 @@ class Dradis():
         endpoint = self._NOTE.replace("<node_id>", str(node_id))
 
         # Set the data
-        note_data = json.dumps({"note": {"text": text, "category_id": category_id}})
+        note_data = {"note": {"text": text, "category_id": category_id}}
 
         # Grab the result
         result = self._create(endpoint=endpoint, data=note_data)
@@ -895,7 +874,7 @@ class Dradis():
         endpoint = self._NOTE.replace("<node_id>", str(node_id))
 
         # Set the data
-        note_data = json.dumps({"note": {"text": text, "category_id": category_id}})
+        note_data = {"note": {"text": text, "category_id": category_id}}
 
         # Grab the result
         result = self._update(endpoint=endpoint, id=note_id, data=note_data)

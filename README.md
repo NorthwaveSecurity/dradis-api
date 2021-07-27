@@ -17,7 +17,7 @@
 
 # Goal
 
-The dradis-api python wrapper provides an easy way to access the [API of dradis](https://dradisframework.com/support/guides/rest_api) from python.
+The dradis-api python wrapper provides an easy way to access the [API of dradis](https://dradisframework.com/support/guides/rest_api) from python. This project is based on [pydradis by Novacast](https://github.com/ncatlabs/pydradis)
 
 # Installation
 

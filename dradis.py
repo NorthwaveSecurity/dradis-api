@@ -53,6 +53,8 @@ class Dradis():
             raise DradisException from e
 
         if (self.__debug):
+            print("\nRequest url:\n")
+            print(url)
             print("\nServer Response:\n")
             print(response.status_code)
             print("---\n")
@@ -925,12 +927,12 @@ class Dradis():
 
         return result
 
-    def get_attachment(self, project_id: int, node_id: int, attachment_id: int):
+    def get_attachment(self, project_id: int, node_id: int, filename: int):
         """Get a single attachment
 
         :param project_id: ID for the project
         :param node_id: ID for the node to get attachment from
-        :param attachment_id: ID for the attachment
+        :param filename: Filename of the attachment
         """
 
         # Add required header to set
@@ -939,7 +941,7 @@ class Dradis():
         endpoint = self._ATTACHMENT.replace("<node_id>", str(node_id))
 
         # Grab the result
-        result = self._get_by_id(endpoint=endpoint, id=attachment_id)
+        result = self._get_by_id(endpoint=endpoint, id=filename)
 
         # Cleanup headers
         self._cleanup_project_header()
@@ -958,7 +960,7 @@ class Dradis():
         # Add required header to set
         self._add_project_header(project_id)
 
-        # endpoint = self._NOTE.replace("<node_id>", str(node_id))
+        # endpoint = self._ATTACHMENT.replace("<node_id>", str(node_id))
 
         # Set the data
         # data = {}
@@ -971,26 +973,25 @@ class Dradis():
 
         return result
 
-    def update_attachment(self, project_id: int, node_id: int, filename: str):
+    def rename_attachment(self, project_id: int, node_id: int, filename: str, new_filename: str):
         """Renames a specific Attachment on a Node in your project
 
         :param project_id: ID for the project
         :param node_id: ID for the node to update attachment for
-        :param filename: The new name for the attachment
+        :param filename: The filename of the attachment to update
+        :param new_filename: The new filename of the attachment
         """
-
-        raise NotImplementedError()
 
         # Add required header to set
         self._add_project_header(project_id)
 
-        # endpoint = self._NOTE.replace("<node_id>", str(node_id))
+        endpoint = self._ATTACHMENT.replace("<node_id>", str(node_id))
 
         # Set the data
-        # data = {}
+        data = {"attachment": {"filename": new_filename}}
 
         # Grab the result
-        result = []
+        result = self._update(endpoint, filename, data)
 
         # Cleanup headers
         self._cleanup_project_header()
@@ -1008,7 +1009,7 @@ class Dradis():
         # Add required header to set
         self._add_project_header(project_id)
 
-        endpoint = self._NOTE.replace("<node_id>", str(node_id))
+        endpoint = self._ATTACHMENT.replace("<node_id>", str(node_id))
 
         # Grab the result
         result = self._delete(endpoint=endpoint, id=filename)

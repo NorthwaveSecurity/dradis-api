@@ -43,7 +43,7 @@ class Dradis():
 
     # Generic action to contact dradis and return the result as JSON
     # Internal use only
-    def _action(self, url, header, req_type, success_code, **kwargs):
+    def _action(self, url, header, req_type, **kwargs):
 
         response = None
         try:
@@ -65,9 +65,6 @@ class Dradis():
         # BUILD URL
         url = self.__url+endpoint
 
-        # SUCCESS CODE
-        success = "200"
-
         # HTTP REQUEST TYPE
         req_type = "GET"
 
@@ -75,7 +72,7 @@ class Dradis():
         header = self.__headers
 
         # GET RESULT
-        result = self._action(url=url, header=header, req_type=req_type, success_code=success)
+        result = self._action(url=url, header=header, req_type=req_type)
 
         return result
 
@@ -85,9 +82,6 @@ class Dradis():
         # BUILD API ENDPOINT
         url = self.__url + endpoint + "/" + str(id)
 
-        # SUCCESS CODE
-        success = "200"
-
         # HTTP REQUEST TYPE
         req_type = "GET"
 
@@ -95,7 +89,7 @@ class Dradis():
         header = self.__headers
 
         # GET RESULT
-        result = self._action(url=url, header=header, req_type=req_type, success_code=success)
+        result = self._action(url=url, header=header, req_type=req_type)
 
         return result
 
@@ -105,9 +99,6 @@ class Dradis():
         # BUILD API ENDPOINT
         url = self.__url + endpoint
 
-        # SUCCESS CODE
-        success = "201"
-
         # HTTP REQUEST TYPE
         req_type = "POST"
 
@@ -115,7 +106,7 @@ class Dradis():
         header = self.__headers
 
         # GET RESULT
-        result = self._action(url=url, header=header, req_type=req_type, success_code=success, json=data)
+        result = self._action(url=url, header=header, req_type=req_type, json=data)
 
         return result
 
@@ -125,9 +116,6 @@ class Dradis():
         # BUILD API ENDPOINT
         url = self.__url + endpoint + "/" + str(id)
 
-        # SUCCESS CODE
-        success = "200"
-
         # HTTP REQUEST TYPE
         req_type = "PUT"
 
@@ -135,7 +123,7 @@ class Dradis():
         header = self.__headers
 
         # GET RESULT
-        result = self._action(url=url, header=header, req_type=req_type, success_code=success, json=data)
+        result = self._action(url=url, header=header, req_type=req_type, json=data)
 
         return result
 
@@ -145,9 +133,6 @@ class Dradis():
         # API ENDPOINT
         url = self.__url + endpoint + "/" + str(id)
 
-        # SUCCESS CODE
-        success = "200"
-
         # HTTP REQUEST TYPE
         req_type = "DELETE"
 
@@ -155,7 +140,7 @@ class Dradis():
         header = self.__headers
 
         # GET RESULT
-        result = self._action(url=url, header=header, req_type=req_type, success_code=success)
+        result = self._action(url=url, header=header, req_type=req_type)
 
         return result
 

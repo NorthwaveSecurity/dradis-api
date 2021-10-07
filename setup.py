@@ -18,7 +18,6 @@ setup(name='dradis-api',
           'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',
           'License :: LGPL License',
-
           'Programming Language :: Python :: 3',
       ],
       keywords='dradis api',

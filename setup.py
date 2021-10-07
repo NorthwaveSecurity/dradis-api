@@ -6,7 +6,7 @@ with open("README.md") as f:
     long_description = f.read()
 
 setup(name='dradis-api',
-      version='1.0',
+      version='1.1',
       description='Dradis API',
       long_description=long_description,
       long_description_content_type="text/markdown",

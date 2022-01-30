@@ -21,7 +21,7 @@
 
 
 import requests
-
+from pathlib import Path
 
 class DradisException(Exception):
     pass
@@ -965,25 +965,42 @@ class Dradis():
 
         return result
 
-    def create_attachment(self, project_id: int, node_id: int):
+    def create_attachment(self, project_id: int, node_id: int, attachement: Path, *args: Path):
         """Create a new attachment
 
         :param project_id: ID for the project
         :param node_id: ID for the node to create attachment for
+        :param attachement: Path of attachement to upload to a node
+        :*args: path(s) of additionnal attachement(s) to add to the upload request (optional)
         """
-
-        raise NotImplementedError()
+        # HTTP REQUEST TYPE
+        req_type = "POST"
 
         # Add required header to set
         self._add_project_header(project_id)
 
-        # endpoint = self._ATTACHMENT.replace("<node_id>", str(node_id))
+        # Remove default application/json content type
+        self.__headers.pop('Content-type',None)
+        
+        # BUILD URL
+        endpoint = self._ATTACHMENT.replace("<node_id>", str(node_id))
+        url = self.__url+endpoint
 
-        # Set the data
-        # data = {}
+        # Add file to upload
+        if attachement.is_file():
+            files = [('files[]', (attachement.name, attachement.read_bytes()))]
+        else :
+           raise Exception(f"{attachement.name} is not a valid file.")
+
+        # Add additionnal file(s) to upload
+        for file in args:
+            if file.is_file():
+                files.append(('files[]',(file.name,file.read_bytes())))
+            else:
+                raise Exception(f"{file.name} is not a valid file.")
 
         # Grab the result
-        result = []
+        result = self._action(url=url,header=self.__headers, req_type=req_type,files=files)
 
         # Cleanup headers
         self._cleanup_project_header()

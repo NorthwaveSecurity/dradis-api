@@ -965,13 +965,13 @@ class Dradis():
 
         return result
 
-    def create_attachment(self, project_id: int, node_id: int, attachement: Path, *args: Path):
-        """Create a new attachment
+    def create_attachment(self, project_id: int, node_id: int, attachment: Path, *args: Path):
+        """Create new attachment() on a node
 
         :param project_id: ID for the project
         :param node_id: ID for the node to create attachment for
-        :param attachement: Path of attachement to upload to a node
-        :*args: path(s) of additionnal attachement(s) to add to the upload request (optional)
+        :param attachment: Path of attachment to upload to a node
+        :*args: path(s) of additionnal attachment(s) to add to the upload request (optional)
         """
         # HTTP REQUEST TYPE
         req_type = "POST"
@@ -987,10 +987,10 @@ class Dradis():
         url = self.__url+endpoint
 
         # Add file to upload
-        if attachement.is_file():
-            files = [('files[]', (attachement.name, attachement.read_bytes()))]
+        if attachment.is_file():
+            files = [('files[]', (attachment.name, attachment.read_bytes()))]
         else :
-           raise Exception(f"{attachement.name} is not a valid file.")
+           raise Exception(f"{attachment.name} is not a valid file.")
 
         # Add additionnal file(s) to upload
         for file in args:

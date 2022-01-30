@@ -60,4 +60,3 @@ Currently, the following endpoints are fully supported:
 The following endpoints are not fully supported:
 
 - The users endpoint is currently unsupported, feel free to implement support and submit a pull request.
-- The attachments endpoint is partially supported, the GET, UPDATE and DELETE operations are implemented, while the CREATE operation is not currently supported, since the endpoint uses the `multipart/form-data` content type instead of JSON. Feel free to implement support and submit a pull request.

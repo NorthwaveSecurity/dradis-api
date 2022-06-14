@@ -41,11 +41,11 @@ class Dradis():
     _DOCPROPS = "/pro/api/document_properties"
     _ISSUE_LIB = "/pro/api/addons/issuelib/entries"
 
-    def __init__(self, api_token, url, debug=False, verify=True):
+    def __init__(self, api_token, url, ssl_verify=True, debug=False):
         self.__api_token = api_token  # API Token
         self.__url = url              # Dradis URL (eg. https://your_dradis_server.com)
         self.__debug = debug          # Debuging True?
-        self.__verify = verify        # Verify SSL
+        self.__verify = ssl_verify    # Verify SSL 
         self.__headers = {
             'Authorization': 'Token token={}'.format(self.__api_token),
             'Content-type': 'application/json',
@@ -965,48 +965,55 @@ class Dradis():
 
         return result
 
-    def create_attachment(self, project_id: int, node_id: int, attachment: Path, *args: Path):
+    def _create_multipart(self, endpoint, project_id, files):
+        """Generic function to create for an endpoint using multipart POST (attachments)"""
+
+        # BUILD API ENDPOINT
+        url = self.__url + endpoint
+
+        # HTTP REQUEST TYPE
+        req_type = "POST"
+
+        # SET HEADERS
+        self._add_project_header(project_id)
+        
+        # Remove  application/json Content-type and let requests handle the multipart/format-data type + boundary automatically
+        self.__headers.pop('Content-type')
+        
+        # REQUEST 
+        result = self._action(url=url, header=self.__headers, req_type=req_type, files=files)
+        
+        # Cleanup headers
+        self._cleanup_project_header()
+        
+        return result
+        
+    def create_attachment(self, project_id: int, node_id: int, *attachments: Path):
         """Create new attachment() on a node
 
         :param project_id: ID for the project
         :param node_id: ID for the node to create attachment for
-        :param attachment: Path of attachment to upload to a node
-        :*args: path(s) of additionnal attachment(s) to add to the upload request (optional)
+        :param attachment:s Path of attachment(s) to upload to a node
         """
-        # HTTP REQUEST TYPE
-        req_type = "POST"
 
-        # Add required header to set
-        self._add_project_header(project_id)
-
-        # Remove default application/json content type
-        self.__headers.pop('Content-type',None)
-        
         # BUILD URL
         endpoint = self._ATTACHMENT.replace("<node_id>", str(node_id))
-        url = self.__url+endpoint
-
-        # Add file to upload
-        if attachment.is_file():
-            files = [('files[]', (attachment.name, attachment.read_bytes()))]
-        else :
-           raise Exception(f"{attachment.name} is not a valid file.")
-
-        # Add additionnal file(s) to upload
-        for file in args:
+        
+        files = []
+        # Add file(s) to upload
+        for file in attachments:
             if file.is_file():
                 files.append(('files[]',(file.name,file.read_bytes())))
             else:
-                raise Exception(f"{file.name} is not a valid file.")
+                raise DradisException(f"{file.name} is not a valid file.")
 
         # Grab the result
-        result = self._action(url=url,header=self.__headers, req_type=req_type,files=files)
+        result = self._create_multipart(endpoint=endpoint, project_id=project_id, files=files)
 
         # Cleanup headers
         self._cleanup_project_header()
 
         return result
-
     def rename_attachment(self, project_id: int, node_id: int, filename: str, new_filename: str):
         """Renames a specific Attachment on a Node in your project
 

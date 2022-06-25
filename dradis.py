@@ -978,7 +978,7 @@ class Dradis():
         self._add_project_header(project_id)
         
         # Remove  application/json Content-type and let requests handle the multipart/format-data type + boundary automatically
-        self.__headers.pop('Content-type')
+        self.__headers.pop('Content-type', None)
         
         # REQUEST 
         result = self._action(url=url, header=self.__headers, req_type=req_type, files=files)

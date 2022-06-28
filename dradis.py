@@ -978,7 +978,7 @@ class Dradis():
         self._add_project_header(project_id)
         
         # headers object with previous headers except for Content-Type
-        headers = {k:v for k,v in self.__headers.items() if k != 'Content-Type'}
+        headers = {k:v for k,v in self.__headers.items() if k != 'Content-type'}
         
         # REQUEST 
         result = self._action(url=url, header=headers, req_type=req_type, files=files)
@@ -1014,6 +1014,7 @@ class Dradis():
         self._cleanup_project_header()
 
         return result
+
     def rename_attachment(self, project_id: int, node_id: int, filename: str, new_filename: str):
         """Renames a specific Attachment on a Node in your project
 

@@ -977,11 +977,11 @@ class Dradis():
         # SET HEADERS
         self._add_project_header(project_id)
         
-        # Remove  application/json Content-type and let requests handle the multipart/format-data type + boundary automatically
-        self.__headers.pop('Content-type', None)
+        # headers object with previous headers except for Content-Type
+        headers = {k:v for k,v in self.__headers.items() if k != 'Content-Type'}
         
         # REQUEST 
-        result = self._action(url=url, header=self.__headers, req_type=req_type, files=files)
+        result = self._action(url=url, header=headers, req_type=req_type, files=files)
         
         # Cleanup headers
         self._cleanup_project_header()
@@ -989,11 +989,11 @@ class Dradis():
         return result
         
     def create_attachment(self, project_id: int, node_id: int, *attachments: Path):
-        """Create new attachment() on a node
+        """Create new attachment(s) on a node
 
         :param project_id: ID for the project
         :param node_id: ID for the node to create attachment for
-        :param attachment:s Path of attachment(s) to upload to a node
+        :param attachments: Path of attachment(s) to upload to a node
         """
 
         # BUILD URL

@@ -56,6 +56,7 @@ Currently, the following endpoints are fully supported:
 - Notes endpoint
 - Document Properties endpoint
 - IssueLibrary endpoint 
+- Attachments endpoint
 
 The following endpoints are not fully supported:
 

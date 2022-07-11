@@ -28,7 +28,7 @@ pip install .
 Or directly from the repository:
 
 ```
-pip install git+ssh://gitlab.local.northwave.nl/redteam/dradis-api.git
+pip install https://github.com/NorthwaveSecurity/dradis-api.git
 ```
 
 # Usage

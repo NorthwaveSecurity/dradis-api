@@ -21,6 +21,7 @@
 
 
 import requests
+import sys
 from pathlib import Path
 
 class DradisException(Exception):
@@ -69,6 +70,9 @@ class Dradis():
         except requests.exceptions.RequestException as e:
             raise DradisException from e
 
+        if 'x-ms-ests-server' in response.headers:
+            raise DradisException("Dradis is behind Azure Application Proxy")
+
         if (self.__debug):
             print("\nRequest url:\n")
             print(url)
@@ -77,7 +81,12 @@ class Dradis():
             print("---\n")
             print(response.content)
 
-        return response.json()
+        try:
+            return response.json()
+        except RequestsJSONDecodeError as e:
+            print(response.headers, file=sys.stderr)
+            print(response.text, file=sys.stderr)
+            raise DradisException from e
 
     def _get_all(self, endpoint: str) -> list:
         """Generic function to get all from an endpoint"""

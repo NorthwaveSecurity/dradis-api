@@ -42,7 +42,7 @@ class Dradis():
     _DOCPROPS = "/pro/api/document_properties"
     _ISSUE_LIB = "/pro/api/addons/issuelib/entries"
 
-    def __init__(self, api_token, url, ssl_verify=True, debug=False):
+    def __init__(self, api_token, url, ssl_verify=True, debug=False, trust_env=None):
         self.__api_token = api_token  # API Token
         self.__url = url              # Dradis URL (eg. https://your_dradis_server.com)
         self.__debug = debug          # Debuging True?
@@ -52,6 +52,7 @@ class Dradis():
             'Content-type': 'application/json',
             'Accept': 'application/vnd.dradisproapi; v=1'
         }  # Default headers
+        self.__trust_env = trust_env
 
     #####################################################
     #                                                   #
@@ -65,7 +66,10 @@ class Dradis():
 
         response = None
         try:
-            response = requests.request(req_type, url, headers=header, verify=self.__verify, **kwargs)
+            with requests.Session() as session:
+                if self.__trust_env is not None:
+                    session.trust_env = self.__trust_env
+                response = session.request(req_type, url, headers=header, verify=self.__verify, **kwargs)
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
             raise DradisException from e

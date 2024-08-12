@@ -39,6 +39,7 @@ class Dradis():
     _CONTENTBLOCK = "/pro/api/content_blocks"
     _NOTE = "/pro/api/nodes/<node_id>/notes"
     _ATTACHMENT = "/pro/api/nodes/<node_id>/attachments"
+    _ATTACHMENT_DOWNLOAD = "/pro/api/nodes/<node_id>/attachments/<filename>/download"
     _DOCPROPS = "/pro/api/document_properties"
     _ISSUE_LIB = "/pro/api/addons/issuelib/entries"
 
@@ -60,7 +61,7 @@ class Dradis():
     #                                                   #
     #####################################################
 
-    def _action(self, url, header, req_type, **kwargs):
+    def _action(self, url, header, req_type, as_json=True, **kwargs):
         """Generic action to contact dradis and return the result as JSON
         Internal use only"""
 
@@ -85,14 +86,17 @@ class Dradis():
             print("---\n")
             print(response.content)
 
-        try:
-            return response.json()
-        except RequestsJSONDecodeError as e:
-            print(response.headers, file=sys.stderr)
-            print(response.text, file=sys.stderr)
-            raise DradisException from e
+        if as_json:
+            try:
+                return response.json()
+            except RequestsJSONDecodeError as e:
+                print(response.headers, file=sys.stderr)
+                print(response.text, file=sys.stderr)
+                raise DradisException from e
+        else:
+            return response.content
 
-    def _get_all(self, endpoint: str) -> list:
+    def _get_all(self, endpoint: str, **kwargs) -> list:
         """Generic function to get all from an endpoint"""
 
         # BUILD URL
@@ -105,7 +109,7 @@ class Dradis():
         header = self.__headers
 
         # GET RESULT
-        result = self._action(url=url, header=header, req_type=req_type)
+        result = self._action(url=url, header=header, req_type=req_type, **kwargs)
 
         return result
 
@@ -957,7 +961,7 @@ class Dradis():
 
         return result
 
-    def get_attachment(self, project_id: int, node_id: int, filename: int):
+    def get_attachment(self, project_id: int, node_id: int, filename: str):
         """Get a single attachment
 
         :param project_id: ID for the project
@@ -977,6 +981,27 @@ class Dradis():
         self._cleanup_project_header()
 
         return result
+
+    def download_attachment(self, project_id: int, node_id: int, filename: str):
+        """Download an attachment
+
+        :param project_id: ID for the project
+        :param node_id: ID for the node to get attachment from
+        :param filename: Filename of the attachment
+        """
+
+        # Add required header to set
+        self._add_project_header(project_id)
+
+        endpoint = self._ATTACHMENT_DOWNLOAD.replace("<node_id>", str(node_id)).replace("<filename>",filename)
+
+        # Grab the result
+        result = self._get_all(endpoint, as_json=False)
+
+        self._cleanup_project_header()
+
+        return result
+        
 
     def _create_multipart(self, endpoint, project_id, files):
         """Generic function to create for an endpoint using multipart POST (attachments)"""

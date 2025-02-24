@@ -1025,13 +1025,13 @@ class Dradis():
         self._cleanup_project_header()
         
         return result
-        
-    def create_attachment(self, project_id: int, node_id: int, *attachments: Path):
+
+    def create_attachment_bytes(self, project_id: int, node_id: int, *attachments: list):
         """Create new attachment(s) on a node
 
         :param project_id: ID for the project
         :param node_id: ID for the node to create attachment for
-        :param attachments: Path of attachment(s) to upload to a node
+        :param attachments: List of tuples of the format (filename, bytes)
         """
 
         # BUILD URL
@@ -1040,10 +1040,7 @@ class Dradis():
         files = []
         # Add file(s) to upload
         for file in attachments:
-            if file.is_file():
-                files.append(('files[]',(file.name,file.read_bytes())))
-            else:
-                raise DradisException(f"{file.name} is not a valid file.")
+            files.append(('files[]',file))
 
         # Grab the result
         result = self._create_multipart(endpoint=endpoint, project_id=project_id, files=files)
@@ -1052,6 +1049,23 @@ class Dradis():
         self._cleanup_project_header()
 
         return result
+
+
+    def create_attachment(self, project_id: int, node_id: int, *attachments: Path):
+        """Create new attachment(s) on a node
+
+        :param project_id: ID for the project
+        :param node_id: ID for the node to create attachment for
+        :param attachments: Path of attachment(s) to upload to a node
+        """
+        new_attachments = []
+        for file in attachments:
+            if file.is_file():
+                new_attachments.append((file.name,file.read_bytes()))
+            else:
+                raise DradisException(f"{file.name} is not a valid file.")
+        self.create_attachment_bytes(projec_id, node_id, new_attachments)
+
 
     def rename_attachment(self, project_id: int, node_id: int, filename: str, new_filename: str):
         """Renames a specific Attachment on a Node in your project
